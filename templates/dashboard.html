@@ -1,43 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class=''>
-    <a href="{% url 'back:graph2' %}" class="btn btn-primary">Graph2</a>
-    <a href="{% url 'back:graph3' %}" class="btn btn-primary">Graph3</a>    
-</div>
 
 <div id="container"></div>
 
+{% endblock %}
 
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+{% block highcharts %}
+
 <script>
     // convert string to json
-    var jsonObject = JSON.parse('{{ rows | escapejs }}');
-
-    function getSeverity(jsonul){
-        var sever = [];
-        for (var i of jsonul) {
-        sever.push(i.severity);
-        }
-        return sever;
-    }
-
-    function getNumbers(jsonul){
-        var ho = [];
-        for (var i of jsonul) {
-            ho.push(i.howmany);
-        }
-        return ho;
-    }
-
-    var severity = getSeverity(jsonObject);
-    var how = getNumbers(jsonObject);
-    console.log(how);
+    var level = JSON.parse('{{ level | escapejs }}');
+    var cate = JSON.parse('{{ how | escapejs }}');
+    cate = cate.map(i=>Number(i));
     
-    
-console.log(jsonObject);
     // chart
 
     Highcharts.chart('container', {
@@ -51,7 +28,7 @@ console.log(jsonObject);
         text: 'Source: <a href="#">Me</a>'
     },
     xAxis: {
-        categories: severity,
+        categories: level,
         title: {
             text: null
         }
@@ -81,7 +58,7 @@ console.log(jsonObject);
         align: 'right',
         verticalAlign: 'top',
         x: -40,
-        y: 80,
+        y: 30,
         floating: true,
         borderWidth: 1,
         backgroundColor:
@@ -93,10 +70,9 @@ console.log(jsonObject);
     },
     series: [ {
         name: 'Attacksss',
-        data: how
+        data: cate
     }]
 });
-
 
 </script>
 

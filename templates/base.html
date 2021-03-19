@@ -21,7 +21,10 @@
             <ul class="navbar-nav">
                 {% if request.user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'back:dashboard' %}">Dashboard</a>
+                    <a class="nav-link" href="{% url 'back:dashboard' %}">Graph1</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'back:graph2' %}">Graph2</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
@@ -38,15 +41,24 @@
         </div>
     </nav>
 
-    <div class="container">
     {% block content %}
 
     {% endblock %}
-  </div>
 
+  <!-- Hichart cdn import -->
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+  <!-- Bootstrap cdn import -->
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+  {% block highcharts %}
+
+  {% endblock %}
 
 </body>
 </html>
