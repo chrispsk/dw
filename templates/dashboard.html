@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>This is dashboard!</p>
+<div class=''>
+    <a href="{% url 'back:graph2' %}" class="btn btn-primary">Graph2</a>
+    <a href="{% url 'back:graph3' %}" class="btn btn-primary">Graph3</a>    
+</div>
 
-  <div id="container"></div>
+<div id="container"></div>
 
 
 <script src="https://code.highcharts.com/highcharts.js"></script>

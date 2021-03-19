@@ -42,3 +42,11 @@ def dash(request):
 
     #return HttpResponse(rows)
     return render(request, "dashboard.html", {"rows":r})
+
+def graph2(request):
+
+    return HttpResponse("Graph2")
+
+def graph3(request):
+
+    return HttpResponse("Graph3")
