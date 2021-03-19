@@ -6,6 +6,7 @@ from django.db import connection
 from django.db.models import Count
 import json
 from django.core import serializers
+from collections import Counter
 
 
 @login_required(login_url='/account/login/')
@@ -97,6 +98,16 @@ def graph3(request):
     ## Django ORM
     record = Vulnerability.objects.filter(severity="critical")
     rows = list(Date.objects.filter(vuln__in=record).select_related())
+    # convert dates to string inside the list
     dates = [str(date_obj) for date_obj in rows]
-    print(dates)
+    # arrange dates:number
+    c = dict(Counter(dates))
+    # separate key and values in order to pass them easily into Highcharts
+    datele = list(c.keys())
+    nr_critical = list(c.values())
+
+    # prepare data for javascript. Convert them into JSON string ...
+    datele = json.dumps(datele)
+    nr_critical = json.dumps(nr_critical)
+
     return HttpResponse("Graph3")
