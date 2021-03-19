@@ -61,6 +61,7 @@ def graph2(request):
     ''')
     
     rom = cursor.fetchall() #list of tuples
+    
     asd = dict()
     for d in rom:
         a = str(d[0]) # grab each data
@@ -70,9 +71,11 @@ def graph2(request):
             asd[a].append(b)
         else:
             asd[a].append(b)
-    print(asd)
-    keys = list(asd.keys())
-    values = list(asd.values())
+
+    print(asd) # {'a': ['critical', 'high', 'critical'], 'b': ['medium']}
+
+    keys = list(asd.keys()) # ['a', 'b']
+    values = list(asd.values()) # [ ['critical', 'high', 'critical'], ['medium'] ]
     lows = []
     mediums = []
     highs = []
@@ -82,19 +85,18 @@ def graph2(request):
         medium = z.count('medium')
         high = z.count('high')
         critical = z.count('critical')
+        
         lows.append(low)
         mediums.append(medium)
         highs.append(high)
         criticals.append(critical)
-    print(keys)
-    print(lows)
-    print(criticals)
+
     
-    dat = json.dumps(keys)
-    lo = json.dumps(lows)
-    me = json.dumps(mediums)
-    hi = json.dumps(highs)
-    cri = json.dumps(criticals)
+    dat = json.dumps(keys) # ['a', 'b']
+    lo = json.dumps(lows) # [0,0]
+    me = json.dumps(mediums) # [0,1]
+    hi = json.dumps(highs) # [1,0]
+    cri = json.dumps(criticals) # [2,0]
     
     context = {
         "dat": dat,
@@ -112,7 +114,6 @@ def graph3(request):
       How many vulnerabilities are on each date
 
     '''
-    
     ## RAW SQL
     # cursor = connection.cursor()
     # cursor.execute('''SELECT dates.publish_date, COUNT(dates.vuln_id) FROM dates GROUP BY dates.publish_date''')
@@ -125,20 +126,11 @@ def graph3(request):
     #########################################################################################
     
     ## Django ORM
-    rows = Date.objects.values('publish_date').annotate(howmany=Count('vuln')) #list of dict
+    rows = Date.objects.values('publish_date').annotate(howmany=Count('vuln'))
     ok = list()
     for i in rows:
         ok.append([str(i['publish_date']), i['howmany']])
-    
-    # dates = list()
-    # howmany = list()
-    # for i in rows:
-    #     dates.append(str(i['publish_date']))
-    #     howmany.append(str(i['howmany']))
-
     dates = json.dumps(ok) # string
-    # howmany = json.dumps(howmany) # string
     return render(request, "graph3.html", {"da":dates})
-    # return render(request, "graph3.html", {"dat": dates, "how": howmany})
 
     
