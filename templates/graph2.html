@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="container"></div>
+
+{% endblock %}
+
+{% block highcharts %}
+
+<script>
+
+var dat = JSON.parse('{{ dat | escapejs }}');
+var cri = JSON.parse('{{ cri | escapejs }}');
+var hi = JSON.parse('{{ hi | escapejs }}');
+var me = JSON.parse('{{ me | escapejs }}');
+var lo = JSON.parse('{{ lo | escapejs }}');
+
+var c = cri.map(i=>Number(i));
+var h = hi.map(i=>Number(i));
+var m = me.map(i=>Number(i));
+var l = lo.map(i=>Number(i));
+
+Highcharts.chart('container', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Monthly Average Rainfall'
+    },
+    subtitle: {
+        text: 'Source: Me'
+    },
+    xAxis: {
+        categories: dat,
+        crosshair: true
+    },
+    yAxis: {
+        min: 0,
+        title: {
+            text: 'What'
+        }
+    },
+    tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+    },
+    plotOptions: {
+        column: {
+            pointPadding: 0.2,
+            borderWidth: 0
+        }
+    },
+    series: [{
+        name: 'Critical',
+        data: c
+
+    }, {
+        name: 'High',
+        data: h
+
+    }, {
+        name: 'Medium',
+        data: m
+
+    }, {
+        name: 'Low',
+        data: l
+
+    }]
+});
+
+</script>
+
+{% endblock %}

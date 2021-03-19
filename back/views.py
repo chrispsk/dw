@@ -42,8 +42,72 @@ def dash(request):
 
     return render(request, "dashboard.html", {"level":level, "how":how})
 
+
 @login_required(login_url='/account/login/')
 def graph2(request):
+    '''  
+    This Lists all vulnerability levels for each date.... using foreign key.
+    
+    !!!! if using sql raw selecting the foreign key... use (dates.vuln_id) not (dates.vuln) 
+    because django add (_id) at the end !!!!
+
+    '''
+    
+    ## RAW SQL
+    cursor = connection.cursor()
+
+    cursor.execute('''SELECT dates.publish_date, vulnerabilities.severity FROM vulnerabilities 
+    JOIN dates on vulnerabilities.id = dates.vuln_id 
+    ''')
+    
+    rom = cursor.fetchall() #list of tuples
+    asd = dict()
+    for d in rom:
+        a = str(d[0]) # grab each data
+        b = d[1]
+        if a not in asd:
+            asd[a] = []
+            asd[a].append(b)
+        else:
+            asd[a].append(b)
+    print(asd)
+    keys = list(asd.keys())
+    values = list(asd.values())
+    lows = []
+    mediums = []
+    highs = []
+    criticals = []
+    for z in values:
+        low = z.count('low')
+        medium = z.count('medium')
+        high = z.count('high')
+        critical = z.count('critical')
+        lows.append(low)
+        mediums.append(medium)
+        highs.append(high)
+        criticals.append(critical)
+    print(keys)
+    print(lows)
+    print(criticals)
+    
+    dat = json.dumps(keys)
+    lo = json.dumps(lows)
+    me = json.dumps(mediums)
+    hi = json.dumps(highs)
+    cri = json.dumps(criticals)
+    
+    context = {
+        "dat": dat,
+        "lo": lo,
+        "me": me,
+        "hi": hi,
+        "cri": cri
+    }
+    return render(request, "graph2.html", context)
+
+
+@login_required(login_url='/account/login/')
+def graph3(request):
     '''
       How many vulnerabilities are on each date
 
@@ -62,52 +126,19 @@ def graph2(request):
     
     ## Django ORM
     rows = Date.objects.values('publish_date').annotate(howmany=Count('vuln')) #list of dict
-    dates = list()
-    howmany = list()
+    ok = list()
     for i in rows:
-        dates.append(str(i['publish_date']))
-        howmany.append(str(i['howmany']))
-
-    dates = json.dumps(dates) # string
-    howmany = json.dumps(howmany) # string
+        ok.append([str(i['publish_date']), i['howmany']])
     
-    return HttpResponse("a")
+    # dates = list()
+    # howmany = list()
+    # for i in rows:
+    #     dates.append(str(i['publish_date']))
+    #     howmany.append(str(i['howmany']))
 
+    dates = json.dumps(ok) # string
+    # howmany = json.dumps(howmany) # string
+    return render(request, "graph3.html", {"da":dates})
+    # return render(request, "graph3.html", {"dat": dates, "how": howmany})
 
-@login_required(login_url='/account/login/')
-def graph3(request):
-    '''  
-    This Lists all severity="critical" vulnerabilities and their dates using foreign key.
     
-    !!!! if using sql raw selecting the foreign key... use (dates.vuln_id) not (dates.vuln) 
-    because django add (_id) at the end !!!!
-
-    '''
-    
-    ## RAW SQL
-    # cursor = connection.cursor()
-    # rows = cursor.execute('''SELECT vulnerabilities.vul_name, dates.publish_date FROM vulnerabilities JOIN dates on vulnerabilities.id = dates.vuln_id WHERE vulnerabilities.severity="critical"''')
-    # rom = cursor.fetchall() #list of tuples
-    # rom = dict(rom)
-    # keys = list(rom.keys())
-    # values = [date_obj.strftime("%d %b %Y") for date_obj in rom.values()]
-    
-    # strkey = json.dumps(keys)
-    # strvalue = json.dumps(values)
-    ##################################################################################################
-    ## Django ORM
-    record = Vulnerability.objects.filter(severity="critical")
-    rows = list(Date.objects.filter(vuln__in=record).select_related())
-    # convert dates to string inside the list
-    dates = [str(date_obj) for date_obj in rows]
-    # arrange dates:number
-    c = dict(Counter(dates))
-    # separate key and values in order to pass them easily into Highcharts
-    datele = list(c.keys())
-    nr_critical = list(c.values())
-
-    # prepare data for javascript. Convert them into JSON string ...
-    datele = json.dumps(datele)
-    nr_critical = json.dumps(nr_critical)
-
-    return HttpResponse("Graph3")
