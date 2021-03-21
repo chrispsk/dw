@@ -31,12 +31,15 @@ def dash(request):
 
     ## Django ORM
     rows = Vulnerability.objects.values('severity').annotate(howmany=Count('vul_name'))
+    
+    # Highcharts. The choosen Graph need separated lists
     severity = list()
     howmany = list()
     for i in rows:
         severity.append(str(i['severity']))
         howmany.append(str(i['howmany']))
     
+    # Converting into json
     level = json.dumps(severity)
     how = json.dumps(howmany)
 
@@ -69,12 +72,14 @@ def graph2(request):
     ''')
     rom = cursor.fetchall() #list of tuples
 
+    # Highcharts. The choosen Graph need separated lists
     dates = list()
     critic = list()
     high = list()
     medium = list()
     low = list()
 
+    # data formating: collecting per category 'ready-made' to pass it easily
     for i in rom:
         dates.append(str(i[0]))
         critic.append(i[1])
@@ -82,6 +87,7 @@ def graph2(request):
         medium.append(i[3])
         low.append(i[4])
 
+    # converting into json
     dat = json.dumps(dates) # ['a', 'b']
     lo = json.dumps(low) 
     me = json.dumps(medium)
