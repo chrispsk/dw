@@ -52,52 +52,41 @@ def graph2(request):
     because django add (_id) at the end !!!!
 
     '''
-    
-    ## RAW SQL
     cursor = connection.cursor()
-
-    cursor.execute('''SELECT dates.publish_date, vulnerabilities.severity FROM vulnerabilities 
-    JOIN dates on vulnerabilities.id = dates.vuln_id 
+    cursor.execute('''
+    SELECT dates.publish_date,
+    SUM(CASE WHEN vulnerabilities.severity = "critical" THEN 1 ELSE 0 END) as critic,
+    SUM(CASE WHEN vulnerabilities.severity = "high" THEN 1 ELSE 0 END) as high,
+    SUM(CASE WHEN vulnerabilities.severity = "medium" THEN 1 ELSE 0 END) as medium,
+    SUM(CASE WHEN vulnerabilities.severity = "low" THEN 1 ELSE 0 END) as low
+    FROM vulnerabilities
+    INNER JOIN dates
+    ON
+    vulnerabilities.id = dates.vuln_id
+    GROUP BY
+    dates.publish_date
     ''')
-    
     rom = cursor.fetchall() #list of tuples
-    
-    asd = dict()
-    for d in rom:
-        a = str(d[0]) # grab each data
-        b = d[1]
-        if a not in asd:
-            asd[a] = []
-            asd[a].append(b)
-        else:
-            asd[a].append(b)
 
-    print(asd) # {'a': ['critical', 'high', 'critical'], 'b': ['medium']}
+    dates = list()
+    critic = list()
+    high = list()
+    medium = list()
+    low = list()
 
-    keys = list(asd.keys()) # ['a', 'b']
-    values = list(asd.values()) # [ ['critical', 'high', 'critical'], ['medium'] ]
-    lows = []
-    mediums = []
-    highs = []
-    criticals = []
-    for z in values:
-        low = z.count('low')
-        medium = z.count('medium')
-        high = z.count('high')
-        critical = z.count('critical')
-        
-        lows.append(low)
-        mediums.append(medium)
-        highs.append(high)
-        criticals.append(critical)
+    for i in rom:
+        dates.append(str(i[0]))
+        critic.append(i[1])
+        high.append(i[2])
+        medium.append(i[3])
+        low.append(i[4])
 
-    
-    dat = json.dumps(keys) # ['a', 'b']
-    lo = json.dumps(lows) # [0,0]
-    me = json.dumps(mediums) # [0,1]
-    hi = json.dumps(highs) # [1,0]
-    cri = json.dumps(criticals) # [2,0]
-    
+    dat = json.dumps(dates) # ['a', 'b']
+    lo = json.dumps(low) 
+    me = json.dumps(medium)
+    hi = json.dumps(high)
+    cri = json.dumps(critic)
+
     context = {
         "dat": dat,
         "lo": lo,
@@ -133,4 +122,4 @@ def graph3(request):
     dates = json.dumps(ok) # string
     return render(request, "graph3.html", {"da":dates})
 
-    
+
