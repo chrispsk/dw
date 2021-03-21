@@ -53,6 +53,7 @@ def graph2(request):
 
     '''
     cursor = connection.cursor()
+    # can use IF function on mysql
     cursor.execute('''
     SELECT dates.publish_date,
     SUM(CASE WHEN vulnerabilities.severity = "critical" THEN 1 ELSE 0 END) as critic,
