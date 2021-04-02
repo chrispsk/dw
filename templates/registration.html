@@ -4,7 +4,23 @@
 <div class="container">
 <form method="POST" class="form-group">
     {% csrf_token %}
-    {{ user_form.as_p }}
+    {# user_form.as_p #}
+
+    <span style="color:red;">{{ user_form.username.errors }}</span>
+    <p>{{ user_form.username }}</p>
+    
+    <span style="color:red;">{{ user_form.email.errors }}</span>
+    <p>{{ user_form.email }}</p>
+
+    <span style="color:red;">{{ user_form.city.errors }}</span>
+    <p>{{ user_form.city }}</p>
+
+    <span style="color:red;">{{ user_form.password1.errors }}</span>
+    <p>{{ user_form.password1 }}</p>
+
+    <span style="color:red;">{{ user_form.password2.errors }}</span>
+    <p>{{ user_form.password2 }}</p>
+
     <input type="submit" value="Register">
   </form>
 </div>

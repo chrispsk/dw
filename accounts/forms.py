@@ -17,11 +17,11 @@ class UserForm(forms.ModelForm):
         fields = ('username','email', 'city')
 
 
-    def clean_username(self):
-       username = self.cleaned_data.get('username')
-       if User.objects.filter(username=username).exists():
-           raise forms.ValidationError("Username exists")
-       return username
+    # def clean_username(self): # handled by default (database)
+    #    username = self.cleaned_data.get('username')
+    #    if User.objects.filter(username=username).exists():
+    #        raise forms.ValidationError("Username exists")
+    #    return username
 
     def clean_email(self):
        email = self.cleaned_data.get('email')
@@ -30,7 +30,7 @@ class UserForm(forms.ModelForm):
        return email
 
 
-    def clean_password2(self):
+    def clean_password2(self): # must have !!!!!!!!!!!!!!!
         # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
@@ -38,7 +38,7 @@ class UserForm(forms.ModelForm):
             raise forms.ValidationError("Passwords don't match")
         return password2
 
-    def save(self, commit=True):
+    def save(self, commit=True): # must have !!!!!!!!!!!!!!!
         # Save the provided password in hashed format
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])

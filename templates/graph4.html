@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div id="container"></div>
+<div id="container">ba</div>
 
 {% endblock %}
 
@@ -10,11 +10,10 @@
 {% block highcharts %}
 
 <script>
-    // convert string to json
-    var level = JSON.parse('{{ level | escapejs }}');
-    var cate = JSON.parse('{{ how | escapejs }}');
-    //cate = cate.map(i=>Number(i));
-    
+// ################ HIGHCHARTS ###############
+
+function renderChart(level, cate){
+
     // chart
 
     Highcharts.chart('container', {
@@ -72,6 +71,31 @@
         name: 'Attacksss',
         data: cate
     }]
+});
+
+}
+
+// #################### AJAX ############################
+
+$(document).ready(function(){
+    var url = "/dashboard/adajax/";
+    var method = "GET";
+    var dataToDjango = {};
+
+    $.ajax({
+        url: url,
+        method: method,
+        data: dataToDjango,
+        success: function(respData) {
+            //console.log(respData);
+            //console.log(respData.how);
+            renderChart(respData.level, respData.how);
+        },
+        error: function(error){
+            alert("some error occured");
+        }
+
+    });
 });
 
 </script>

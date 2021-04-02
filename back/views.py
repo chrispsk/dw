@@ -7,6 +7,7 @@ from django.db.models import Count
 import json
 from django.core import serializers
 from collections import Counter
+from django.http import JsonResponse
 
 
 @login_required(login_url='/account/login/')
@@ -37,11 +38,14 @@ def dash(request):
     howmany = list()
     for i in rows:
         severity.append(str(i['severity']))
-        howmany.append(str(i['howmany']))
+        howmany.append(i['howmany'])
+        #howmany.append(str(i['howmany']))
     
     # Converting into json
     level = json.dumps(severity)
+    #level = json.dumps(["mda","high","medium","low"])
     how = json.dumps(howmany)
+    #how = json.dumps([3,5,6,1])
 
     return render(request, "dashboard.html", {"level":level, "how":how})
 
@@ -130,3 +134,24 @@ def graph3(request):
     return render(request, "graph3.html", {"da":dates})
 
 
+@login_required(login_url='/account/login/')
+def adding(request):
+    ## Django ORM
+    
+    return render(request, "graph4.html")
+
+@login_required(login_url='/account/login/')
+def adding_ajax(request):
+    ## Django ORM
+    rows = Vulnerability.objects.values('severity').annotate(howmany=Count('vul_name'))
+    
+    # Highcharts. The choosen Graph need separated lists
+    severity = list()
+    howmany = list()
+    for i in rows:
+        severity.append(str(i['severity']))
+        howmany.append(i['howmany'])
+    data = {}
+    data['level'] = severity
+    data['how'] = howmany
+    return JsonResponse(data)
