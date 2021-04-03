@@ -142,16 +142,20 @@ def adding(request):
 
 @login_required(login_url='/account/login/')
 def adding_ajax(request):
-    ## Django ORM
-    rows = Vulnerability.objects.values('severity').annotate(howmany=Count('vul_name'))
-    
-    # Highcharts. The choosen Graph need separated lists
-    severity = list()
-    howmany = list()
-    for i in rows:
-        severity.append(str(i['severity']))
-        howmany.append(i['howmany'])
+    #print(request.GET.get("type"))
     data = {}
-    data['level'] = severity
-    data['how'] = howmany
+    if request.GET.get("type") == "severity total":
+        rows = Vulnerability.objects.values('severity').annotate(howmany=Count('vul_name'))
+        
+        # Highcharts. The choosen Graph need separated lists
+        severity = list()
+        howmany = list()
+        for i in rows:
+            severity.append(str(i['severity']))
+            howmany.append(i['howmany'])
+        data['level'] = severity
+        data['how'] = howmany
+    if request.GET.get("type") == "4 weeks":
+        data['level'] = ["week1", "week2", "week3", "week4"]
+        data['how'] = [23,43,54,12]
     return JsonResponse(data)

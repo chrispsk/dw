@@ -2,7 +2,9 @@
 
 {% block content %}
 
-<div id="container">ba</div>
+<div id="container"></div>
+
+<div id="container2"></div>
 
 {% endblock %}
 
@@ -12,11 +14,11 @@
 <script>
 // ################ HIGHCHARTS ###############
 
-function renderChart(level, cate){
+function renderChart(id, level, cate){
 
     // chart
 
-    Highcharts.chart('container', {
+    Highcharts.chart(id, {
     chart: {
         type: 'bar'
     },
@@ -78,9 +80,10 @@ function renderChart(level, cate){
 // #################### AJAX ############################
 
 $(document).ready(function(){
+    // AJAX 1 pt graph 1
     var url = "/dashboard/adajax/";
     var method = "GET";
-    var dataToDjango = {};
+    var dataToDjango = {"type":"severity total"};
 
     $.ajax({
         url: url,
@@ -89,7 +92,27 @@ $(document).ready(function(){
         success: function(respData) {
             //console.log(respData);
             //console.log(respData.how);
-            renderChart(respData.level, respData.how);
+            renderChart("container", respData.level, respData.how);
+        },
+        error: function(error){
+            alert("some error occured");
+        }
+
+    });
+
+    // AJAX 2 pt graph 2
+    var url = "/dashboard/adajax/";
+    var method = "GET";
+    var dataToDjango = {"type":"4 weeks"};
+
+    $.ajax({
+        url: url,
+        method: method,
+        data: dataToDjango,
+        success: function(respData) {
+            //console.log(respData);
+            //console.log(respData.how);
+            renderChart("container2", respData.level, respData.how);
         },
         error: function(error){
             alert("some error occured");
