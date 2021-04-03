@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from .models import Vulnerability, Date
-from django.db import connection
+from django.db import connection, Error
 from django.db.models import Count
 import json
 from django.core import serializers
@@ -59,9 +59,7 @@ def graph2(request):
     because django add (_id) at the end !!!!
 
     '''
-    cursor = connection.cursor()
-    # can use IF function on mysql
-    cursor.execute('''
+    sql = '''
     SELECT dates.publish_date,
     SUM(CASE WHEN vulnerabilities.severity = "critical" THEN 1 ELSE 0 END) as critic,
     SUM(CASE WHEN vulnerabilities.severity = "high" THEN 1 ELSE 0 END) as high,
@@ -73,9 +71,15 @@ def graph2(request):
     vulnerabilities.id = dates.vuln_id
     GROUP BY
     dates.publish_date
-    ''')
-    rom = cursor.fetchall() #list of tuples
-
+    '''
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            rom = cursor.fetchall()
+    except Error as err:
+        print(err)
+        
+        
     # Highcharts. The choosen Graph need separated lists
     dates = list()
     critic = list()
