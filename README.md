@@ -1,8 +1,6 @@
 # Vulnerability Management Dashboard
 
-A Django web application for tracking vulnerabilities and visualizing security data through interactive dashboard charts.
-
-The project includes user authentication, protected dashboard pages, database-backed vulnerability records, severity-based charts, date-based trends, and AJAX-powered dynamic visualizations using Highcharts.
+Security Analytics Dashboard — Django web application built for vulnerability tracking and visualization, featuring user authentication, protected dashboard pages, database-backed vulnerability records, Highcharts severity charts, date-based trends, and AJAX-powered dynamic visualizations.
 
 ## Features
 
