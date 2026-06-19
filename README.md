@@ -158,20 +158,6 @@ The dashboard uses Highcharts to display vulnerability data in different formats
 - Column chart for daily vulnerability trends
 - AJAX-loaded charts for dynamic dashboard content
 
-## Security Notes
-
-This project is intended for learning and portfolio purposes.
-
-Recommended production improvements:
-
-- Keep `SECRET_KEY` outside the source code
-- Set `DEBUG=False` in production
-- Configure `ALLOWED_HOSTS`
-- Use a production database instead of SQLite
-- Add input validation and form error handling
-- Add automated tests
-- Configure static files properly for deployment
-
 ## Possible Improvements
 
 - Add CRUD functionality for vulnerabilities
@@ -186,4 +172,4 @@ Recommended production improvements:
 
 ## License
 
-This project does not currently include a license.
+This project is open source.
