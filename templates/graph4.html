@@ -1,126 +1,112 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container">
+    <h1>Dynamic Charts</h1>
+    <p class="text-muted">
+        This page loads vulnerability chart data dynamically using AJAX.
+    </p>
 
-<div id="container"></div>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Severity Overview</h4>
+            <div id="severity-ajax-chart" style="width: 100%; height: 400px;"></div>
+        </div>
 
-<div id="container2"></div>
-
+        <div class="col-md-6">
+            <h4>Last 4 Weeks</h4>
+            <div id="weeks-ajax-chart" style="width: 100%; height: 400px;"></div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
-
 {% block highcharts %}
-
 <script>
-// ################ HIGHCHARTS ###############
+    function renderBarChart(containerId, categories, values, title) {
+        Highcharts.chart(containerId, {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: title
+            },
+            subtitle: {
+                text: 'Source: Vulnerability dataset'
+            },
+            xAxis: {
+                categories: categories,
+                title: {
+                    text: 'Category'
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Number of vulnerabilities',
+                    align: 'high'
+                }
+            },
+            tooltip: {
+                valueSuffix: ' vulnerabilities'
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Vulnerabilities',
+                data: values
+            }]
+        });
+    }
 
-function renderChart(id, level, cate){
+    $(document).ready(function () {
+        const ajaxUrl = "{% url 'back:adajax' %}";
 
-    // chart
-
-    Highcharts.chart(id, {
-    chart: {
-        type: 'bar'
-    },
-    title: {
-        text: 'Number Of Attacks by Severity'
-    },
-    subtitle: {
-        text: 'Source: <a href="#">Me</a>'
-    },
-    xAxis: {
-        categories: level,
-        title: {
-            text: null
-        }
-    },
-    yAxis: {
-        min: 0,
-        title: {
-            text: 'Number of attacks',
-            align: 'high'
-        },
-        labels: {
-            overflow: 'justify'
-        }
-    },
-    tooltip: {
-        valueSuffix: ' attacks'
-    },
-    plotOptions: {
-        bar: {
-            dataLabels: {
-                enabled: true
+        $.ajax({
+            url: ajaxUrl,
+            method: "GET",
+            data: {
+                type: "severity total"
+            },
+            success: function (responseData) {
+                renderBarChart(
+                    "severity-ajax-chart",
+                    responseData.level,
+                    responseData.how,
+                    "Vulnerabilities by Severity"
+                );
+            },
+            error: function () {
+                alert("Unable to load severity chart data.");
             }
-        }
-    },
-    legend: {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'top',
-        x: -40,
-        y: 30,
-        floating: true,
-        borderWidth: 1,
-        backgroundColor:
-            Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
-        shadow: true
-    },
-    credits: {
-        enabled: false
-    },
-    series: [ {
-        name: 'Attacksss',
-        data: cate
-    }]
-});
+        });
 
-}
-
-// #################### AJAX ############################
-
-$(document).ready(function(){
-    // AJAX 1 pt graph 1
-    var url = "/dashboard/adajax/";
-    var method = "GET";
-    var dataToDjango = {"type":"severity total"};
-
-    $.ajax({
-        url: url,
-        method: method,
-        data: dataToDjango,
-        success: function(respData) {
-            //console.log(respData);
-            //console.log(respData.how);
-            renderChart("container", respData.level, respData.how);
-        },
-        error: function(error){
-            alert("some error occured");
-        }
-
+        $.ajax({
+            url: ajaxUrl,
+            method: "GET",
+            data: {
+                type: "4 weeks"
+            },
+            success: function (responseData) {
+                renderBarChart(
+                    "weeks-ajax-chart",
+                    responseData.level,
+                    responseData.how,
+                    "Vulnerabilities Over the Last 4 Weeks"
+                );
+            },
+            error: function () {
+                alert("Unable to load weekly chart data.");
+            }
+        });
     });
-
-    // AJAX 2 pt graph 2
-    var url = "/dashboard/adajax/";
-    var method = "GET";
-    var dataToDjango = {"type":"4 weeks"};
-
-    $.ajax({
-        url: url,
-        method: method,
-        data: dataToDjango,
-        success: function(respData) {
-            //console.log(respData);
-            //console.log(respData.how);
-            renderChart("container2", respData.level, respData.how);
-        },
-        error: function(error){
-            alert("some error occured");
-        }
-
-    });
-});
-
 </script>
-
 {% endblock %}
