@@ -2,11 +2,31 @@
 
 {% block content %}
 <div class="container">
-    <div class="jumbotron jumbotron-fluid">
-        <div class="container">
-          <h1 class="display-4">Vulnerability Management</h1>
-          <p class="lead">Please <a href="{% url 'accounts:register' %}">register</a> and <a href="{% url 'accounts:login' %}">login</a> in order to access the plots.</p>
-        </div>
-      </div>
+    <div class="jumbotron">
+        <h1 class="display-4">Vulnerability Management Dashboard</h1>
+        <p class="lead">
+            A Django web application for tracking vulnerabilities and visualizing severity trends using Highcharts.
+        </p>
+
+        <hr class="my-4">
+
+        <p>
+            The dashboard includes user authentication, protected pages, vulnerability records,
+            severity-based charts, date-based trends, and AJAX-powered dynamic visualizations.
+        </p>
+
+        {% if request.user.is_authenticated %}
+            <a class="btn btn-primary btn-lg" href="{% url 'back:dashboard' %}" role="button">
+                Open Dashboard
+            </a>
+        {% else %}
+            <a class="btn btn-primary btn-lg" href="{% url 'accounts:login' %}" role="button">
+                Login
+            </a>
+            <a class="btn btn-outline-secondary btn-lg" href="{% url 'accounts:register' %}" role="button">
+                Register
+            </a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
