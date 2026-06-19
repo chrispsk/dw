@@ -1,79 +1,82 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container">
+    <h1>Severity Timeline</h1>
+    <p class="text-muted">
+        This chart shows how vulnerability severity levels are distributed across publication dates.
+    </p>
 
-<div id="container"></div>
-
+    <div id="severity-timeline-chart" style="width: 100%; height: 400px;"></div>
+</div>
 {% endblock %}
 
 {% block highcharts %}
-
 <script>
+    const publishDates = JSON.parse('{{ dat|escapejs }}');
+    const criticalCounts = JSON.parse('{{ cri|escapejs }}').map(Number);
+    const highCounts = JSON.parse('{{ hi|escapejs }}').map(Number);
+    const mediumCounts = JSON.parse('{{ me|escapejs }}').map(Number);
+    const lowCounts = JSON.parse('{{ lo|escapejs }}').map(Number);
 
-var dat = JSON.parse('{{ dat | escapejs }}');
-var cri = JSON.parse('{{ cri | escapejs }}');
-var hi = JSON.parse('{{ hi | escapejs }}');
-var me = JSON.parse('{{ me | escapejs }}');
-var lo = JSON.parse('{{ lo | escapejs }}');
-
-var c = cri.map(i=>Number(i));
-var h = hi.map(i=>Number(i));
-var m = me.map(i=>Number(i));
-var l = lo.map(i=>Number(i));
-
-Highcharts.chart('container', {
-    chart: {
-        type: 'column'
-    },
-    title: {
-        text: 'Display all severity levels per date'
-    },
-    subtitle: {
-        text: 'Source: Me'
-    },
-    xAxis: {
-        categories: dat,
-        crosshair: true
-    },
-    yAxis: {
-        min: 0,
+    Highcharts.chart('severity-timeline-chart', {
+        chart: {
+            type: 'column'
+        },
         title: {
-            text: 'What'
-        }
-    },
-    tooltip: {
-        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-        footerFormat: '</table>',
-        shared: true,
-        useHTML: true
-    },
-    plotOptions: {
-        column: {
-            pointPadding: 0.2,
-            borderWidth: 0
-        }
-    },
-    series: [{
-        name: 'Critical',
-        data: c
-
-    }, {
-        name: 'High',
-        data: h
-
-    }, {
-        name: 'Medium',
-        data: m
-
-    }, {
-        name: 'Low',
-        data: l
-
-    }]
-});
-
+            text: 'Vulnerability Severity by Date'
+        },
+        subtitle: {
+            text: 'Source: Vulnerability dataset'
+        },
+        xAxis: {
+            categories: publishDates,
+            crosshair: true,
+            title: {
+                text: 'Publication date'
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Number of vulnerabilities'
+            }
+        },
+        tooltip: {
+            shared: true,
+            useHTML: true,
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y}</b></td></tr>',
+            footerFormat: '</table>'
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        series: [
+            {
+                name: 'Critical',
+                data: criticalCounts
+            },
+            {
+                name: 'High',
+                data: highCounts
+            },
+            {
+                name: 'Medium',
+                data: mediumCounts
+            },
+            {
+                name: 'Low',
+                data: lowCounts
+            }
+        ]
+    });
 </script>
-
 {% endblock %}
