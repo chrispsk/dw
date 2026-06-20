@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django.db.models.signals import post_save
 
 # Extend user model
