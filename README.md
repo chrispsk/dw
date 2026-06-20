@@ -15,6 +15,20 @@ Security Analytics Dashboard — Django web application built for vulnerability 
 - Django ORM queries
 - Raw SQL example for grouped security data
 
+## Screenshots
+
+### Severity Overview
+
+![Severity Overview](screenshots/severity-overview.png)
+
+### Severity Timeline
+
+![Severity Timeline](screenshots/severity-timeline.png)
+
+### Dynamic Charts
+
+![Dynamic Charts](screenshots/dynamic-charts.png)
+
 ## Technologies Used
 
 - Python
